@@ -6,6 +6,11 @@ from nltk.corpus import stopwords
 import math
 import os
 nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('punkt_tab')
+#nltk.download('punkt')
+#nltk.download('wordnet')
+#nltk.download('omw-1.4')
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -91,8 +96,9 @@ def compute_idfs(documents):
 
     for word in all_words:
         containing_docs = sum(1 for doc in documents.values() if word in doc)
-        idfs[word] = math.log(total_documents / containing_docs)
-    
+        #idfs[word] = math.log(total_documents / containing_docs)
+        idfs[word] = math.log(total_documents / (containing_docs)) + 1 
+        
     return idfs
     raise NotImplementedError
 

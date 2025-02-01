@@ -1,8 +1,16 @@
 import nltk, sys, math, os
-from nltk.corpus import stopwords
-nltk.download('stopwords')
 
-FILE_MATCHES = 1
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('punkt_tab')
+#nltk.download('wordnet')
+#nltk.download('omw-1.4')
+
+
+
+FILE_MATCHES = 3
 SENTENCE_MATCHES = 1
 
 def main():
@@ -45,9 +53,11 @@ def load_files(dirct):
     raise NotImplementedError
 
 def tokenize(docs):
+    stemmer = PorterStemmer()
     stop_words = set(stopwords.words('english'))
     words = nltk.word_tokenize(docs.lower())
-    return [word for word in words if word.isalnum() and word not in stop_words]
+    words = [stemmer.stem(word) for word in words]
+    return [word for word in words if word.isalnum() and word not in (stop_words, '==', '[',']', '(',')')]
     raise NotImplementedError
     
 def compute_idfs(docs):
@@ -56,8 +66,11 @@ def compute_idfs(docs):
     all_words = set(word for doc in docs.values() for word in doc)
     
     for word in all_words:
-        cont_docs = sum(1 for doc in docs.values() if word in doc)
-        idfs[word] = math.log(total_doc/cont_docs)
+        containing_docs = sum(1 for doc in docs.values() if word in doc)
+        #idfs[word] = math.log(total_doc/cont_docs+1) 
+        idfs[word] = math.log(total_doc/(containing_docs+1)) + 1
+        #idfs[word] = math.log(total_doc/(cont_docs+1)) 
+    
         
     return idfs
     raise NotImplementedError
